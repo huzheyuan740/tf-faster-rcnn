@@ -78,11 +78,12 @@ class pascal_voc(imdb):
   def _load_image_set_index(self):
     """
     Load the indexes listed in this dataset's image set file.
+    取得图片名
     """
     # Example path to image set file:
     # self._devkit_path + /VOCdevkit2007/VOC2007/ImageSets/Main/val.txt
     image_set_file = os.path.join(self._data_path, 'ImageSets', 'Main',
-                                  self._image_set + '.txt')
+                                  self._image_set + '.txt')#这个txt包含所有训练集合的图片名
     assert os.path.exists(image_set_file), \
       'Path does not exist: {}'.format(image_set_file)
     with open(image_set_file) as f:
@@ -93,15 +94,16 @@ class pascal_voc(imdb):
     """
     Return the default path where PASCAL VOC is expected to be installed.
     """
-    return os.path.join(cfg.DATA_DIR, 'VOCdevkit' + self._year)
+    return os.path.join(cfg.DATA_DIR, 'VOCdevkit' + self._year)#字符路径拼接函数
 
   def gt_roidb(self):
     """
     Return the database of ground-truth regions of interest.
+    将图片gt加载进来
 
     This function loads/saves from/to a cache file to speed up future calls.
     """
-    cache_file = os.path.join(self.cache_path, self.name + '_gt_roidb.pkl')
+    cache_file = os.path.join(self.cache_path, self.name + '_gt_roidb.pkl')#gt的信息是以.pkl文件储存的
     if os.path.exists(cache_file):
       with open(cache_file, 'rb') as fid:
         try:
@@ -111,7 +113,7 @@ class pascal_voc(imdb):
       print('{} gt roidb loaded from {}'.format(self.name, cache_file))
       return roidb
 
-    gt_roidb = [self._load_pascal_annotation(index)
+    gt_roidb = [self._load_pascal_annotation(index)#函数用于获取图片的gt
                 for index in self.image_index]
     with open(cache_file, 'wb') as fid:
       pickle.dump(gt_roidb, fid, pickle.HIGHEST_PROTOCOL)
@@ -142,6 +144,7 @@ class pascal_voc(imdb):
     """
     Load image and bounding boxes info from XML file in the PASCAL VOC
     format.
+    获得图片的gt标注
     """
     filename = os.path.join(self._data_path, 'Annotations', index + '.xml')
     tree = ET.parse(filename)
